@@ -1,0 +1,223 @@
+Documentation.txt
+
+*******************************************************************************
+
+Version 1.0 
+Simon Gawlik
+sgawlik@gmail.com
+http://youtu.be/Xj2kMzQqDPo
+
+*******************************************************************************
+
+Table of Contents
+
+1 About sharemyshelf
+2 Installation (while it is not yet a real website)
+    2.1 Download
+    2.2 Permissions
+    2.3 Hosts file
+    2.4 Viewing website in browser
+3 A tour of sharemyshelf's functionalities
+    3.1 Managing user account
+        3.1.1 Viewing my book lists
+        3.1.2 Searching through my book lists
+        3.1.3 Managing my book lists
+        3.1.4 Adding new books to my lists
+    3.2 Interacting with other users
+        3.2.1 Viewing my list of friends and responding to friend requests
+        3.2.2 Viewing my friends' book lists
+        3.2.3 Searching through my friends' book lists
+        3.2.4 Adding new friends
+4 Test accounts
+5 Future functionalities?
+        
+*******************************************************************************
+
+1 About sharemyshelf
+
+  sharemyshelf is a website for managing your book collection with your friends
+  and family. sharemyshelf allows you to keep three lists: a list of the books 
+  that you own, a list of the books that you have currenty loaned out to 
+  someone, and list of books that you would like to have. You can move books 
+  between the three lists freely, add new books via a search functionality or 
+  remove books. 
+  The website further allows you to find any friends who have signed up and 
+  make your lists searchable to each other. You can view your friends' lists
+  directly, which might be useful if you want to borrow a book that a specific 
+  friend owns or if you want to view a wishlist for a friend's upcoming 
+  birthday.
+  You can also search through all of your friends' books at once, if you are 
+  looking to borrow a particular book. Sending email requests to borrow can be 
+  done with the click of a button.
+  Are you more the visual type? Here is the link to a quick video overview:
+  http://youtu.be/Xj2kMzQqDPo
+  
+
+2 Installation (while it is not yet a real website)
+
+    2.1 Download 
+        
+        (same as CS50 PSet7 with exception of one subdirectory "bookcovers")
+        Open Terminal and navigate to vhosts directory.
+          cd ~/vhosts
+        Download the project.zip file.
+        Unzip the project.zip file.
+          unzip project.zip
+        Check to see that project directory was created with "ls".
+        Remove zip file.
+          rm -f project.zip
+        Go into project directory.
+          cd project
+    
+    2.2 Permissions
+    
+        Ensure a few directories are world-executable by executing:
+          chmod a+x ~
+          chmod a+x ~/vhosts
+          chmod a+x ~/vhosts/project
+          chmod a+x ~/vhosts/project/public
+        Navigate to ~/vhosts/project/public
+          cd ~/vhosts/project/public
+        Ensure that subdirectories and folders are world-executable:
+          chmod a+x css fonts img js
+          chmod a+r css/* fonts/* img/* js/*
+          cd ~/vhosts/project/public/img
+          chmod a+x bookcovers
+          chmod a+r bookcovers/*
+    
+    2.3 Hosts file
+    
+        In terminal window, open hosts file with admin permissions 
+          sudo gedit /etc/hosts
+        Carefully add this line at the bottom of that file, which will 
+        associate project with the appliance’s "loopback" address (which 
+        won’t ever change):
+          127.0.0.1 pset7
+        Save file and quit gedit.
+        If you encounter a Gtk-WARNING with gedit, try restarting the 
+        appliance, as via Menu > Log Out > Restart (or via VMware’s own 
+        Restart option), then try again.
+        
+    2.4 Viewing website in browser
+    
+        Go to http://project/ to open the website.
+    
+3 A tour of sharemyshelf's functionalities
+    
+    3.1 Managing user account
+    
+        3.1.1 Viewing my book lists
+        
+              By default (or when clicking on the logo), the website displays 
+              all three lists: list of owned books, list of books on loan, and
+              wishlist. For a new user this shows that all lists are currently
+              empty and encourages the user to add books.
+              On the left-hand side is a dashboard that allows the user to 
+              display one list at a time. This is useful for users who already
+              have a lot of books in their shelves or just want to manage a 
+              particular list. 
+              
+        3.1.2 Searching through my book lists
+        
+              Upon clicking "Search My Shelves" in the nav bar, a user is 
+              presented with a search functionality. Here the user can search 
+              among his/her own books. This is useful for powerusers who may 
+              have a very large book collection where even viewing a particular
+              list (3.1.1) may not provide enough granularity. Search terms are
+              soted by relevance and they are inclusive. If a certain author is
+              searched but a title by another author, both books will be 
+              included in the results.
+        
+        3.1.3 Managing my book lists
+        
+              Whether in a particular list or through the search functionality,
+              users have the ability to click buttons that perform certain 
+              actions depending on the current status of a book. 
+              Books on "My Bookshelf" can be loaned out, moved to "My Wishlist"
+              (if an old copy is worn out or a book was lost), or even removed.
+              Books on the list "My Books on Loan" can be moved back to the 
+              bookshelf after they are returned to the user. Currently, it is
+              up to the user to write in the name of the borrower when lending
+              a book. This allows the user to lend books to people who are not 
+              registered users.
+              Books on "My Wishlist" can be moved to the list of owned books
+              when the user obtains a copy of the book or they can be removed 
+              of a user no longer wants to have the book on his/her wishlist
+        
+        3.1.4 Adding new books to my lists
+        
+              A user can add a new book by using the "Add Books To Shelf" nav 
+              link. This renders a form that obtains results from the Google 
+              Books API and displays them to the user.
+              The user can then select a book from the search results and add 
+              it to My Booklist or My Wishlist.
+        
+    3.2 Interacting with other users
+    
+        3.2.1 Viewing my list of friends and responding to friend requests
+              
+              When a user clicks the "My Friends" nav link, he/she can see a 
+              list of friends who they have accepted or who accepted them. The 
+              user then click on a link to display the friend's lists.
+              On the same page, there is a list of friend requests. The user
+              has the option to Accept or Reject another user's friend request.
+              If he/she accepts the request, the new friend is visible in the 
+              friend list and both users can view each other's lists as well as
+              search through each other's books. If the request is rejected, 
+              the users will be prevented from adding each other in the future.
+              
+        3.2.2 Viewing my friends' book lists
+        
+              While on the "My Friends" page, a user can view the individual 
+              lists of each of their friends. As with their own lists they can
+              see all three at once or each list individually. It's a great way
+              to find the right book for your friend's upcoming birthday! There
+              is even a link that will bring you to the Amazon page of the book
+              you want to buy for a friend.
+        
+        3.2.3 Searching through my friends' book lists
+        
+              If a user clicks on the "Search My Friends' Shelves" nav link, 
+              he/she can search through all of their friends' books if they 
+              currently have them on their bookshelf or have loaned them out.
+              The search function works similarly to the search function for 
+              the user's own books. Results are matched by substrings and 
+              ranked by relevance. If a certain author is searched but a 
+              title by another author, both books will be included in the
+              results. If more than one friend owns a book, the book will be 
+              displayed multiple times. The user has the option to send 
+              requests to borrow books directly from the search results per 
+              email to his/her friends.
+        
+        3.2.4 Adding new friends
+        
+              When a new friend joins the website, the user can search for
+              him/her by email or username upon clicking the "Add Friends" nav
+              link. The search uses substring matching to find the friend. When
+              in doubt, use fewer characters to get more results!
+
+4 Test Accounts
+  user: simon
+  password: test
+  
+  user: josef
+  password: test
+  
+  user: anneliese
+  password: test
+  
+  Feel free to create your own accounts!
+
+5 Future Functionalities?
+  I would like to:
+  - make friend requests more robust and allow users to change their mind after
+    having rejected someone initially
+  - provide a more interactive UI with JQery/JavaScript features to make lists
+    sortable
+  - allow users to create more elaborate profiles that can have pictures, 
+    quotations, tastes in books
+  - allow users to tag their books to categories
+  - privacy settings that allow users to hide certain books from friends
+  - put the website online and let my friends use it :)
+
+*******************************************************************************

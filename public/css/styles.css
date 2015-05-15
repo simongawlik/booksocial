@@ -1,0 +1,106 @@
+/**
+ * styles.css
+ *
+ * Computer Science 50
+ * Problem Set 7
+ *
+ * Global CSS.
+ */
+
+h3
+{ 
+   font-family: 'GNUTypewriter'; 
+   font-weight: normal; 
+   font-style: normal;
+   margin-top: 35px;
+}
+
+h3:first-child
+{
+    margin-top: 15px
+}
+
+.container
+{
+    /* center contents */
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 968px;
+}
+
+#top
+{
+    /* position logo */
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+
+#middle .form-control
+{
+    /* center form controls */
+    display: inline-block;
+
+    /* override Bootstrap's 100% width for form controls */
+    width: auto;
+}
+
+
+#dashboard
+{
+    /* create dashboard to house links for different booklists  */
+    padding-top: 61px;
+    float: left;
+    min-height: 600px;
+    overflow: hidden;
+    width: 150px;
+    margin-right: 5px;
+}
+
+
+#list
+{
+    /* display lists next to dashboard */
+    margin: 10px auto 0;
+    min-height: 730px;
+    overflow: hidden;
+    width: auto;
+}
+
+th
+{
+    /* center table headers */
+    text-align: center;
+}
+
+.nav-stacked
+{
+    /* right-align dashboard links */
+    text-align: right;
+}
+
+.actionb
+{
+    /* fix width for buttons in bookshelf list and space evenly */
+    margin-top: 2px;
+    margin-bottom: 6px;
+    width: 130px;
+}
+
+.actionw
+{
+    /* fix width for buttons in wishlist list and space evenly */
+    margin-top: 2px;
+    margin-bottom: 6px;
+    width: 142px;
+}
+
+#bottom
+{
+    /* shrink bottom's font size */
+    font-size: smaller;
+
+    /* surround with whitespace */
+    margin: 20px;
+}

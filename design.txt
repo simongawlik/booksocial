@@ -1,0 +1,249 @@
+Design.txt
+
+*******************************************************************************
+
+Version 1.0 
+Simon Gawlik
+sgawlik@gmail.com
+
+*******************************************************************************
+
+Table of Contents
+
+1 About the overall design
+2 Database design
+    2.1 users table
+    2.2 books table
+    2.3 ownership table
+    2.4 friends table
+3 Google Books API
+    3.1 Inputs to API
+    3.2 Adding books
+4 Controller design
+    4.1 Passing variables
+        4.1.1 Search My Shelves
+        4.1.2 Search My Friends' Shelves
+        4.1.3 Add friends
+        4.1.4 Rendering pages
+        4.1.5 Sending emails 
+    4.3 Exception handling    
+5 HTML/CSS design
+    5.1 Page structure for book lists
+    5.2 Page structure for search results
+        
+*******************************************************************************
+
+Table of Contents
+
+1 About the overall design
+
+  Overall, I strived to follow the MVC approach as closely as possible in the
+  implementation. I found that I had to use several different approaches to 
+  render content in the desired ways. This led to different ways to pass arrays
+  between pages. Nevertheless, I believe that they are fit for the situations 
+  in which they were used.
+  For the database, I separated entities to a level that would give me 
+  reasonable flexibility to combine results and avoid waste of space.
+  The Google Books API was a challenge to integrate until I found out the right
+  syntax to use in PHP and was able to provide the right inputs and handle the
+  results.
+  Lastly, the page design was influenced by the current trends in UI design.
+  I chose to use twitter bootstrap 3 instead of 2 to have access to different
+  designs. Overall, my edits were minor though and I was focused on a clean UI.
+  I chose a font from Open Font Library for my headers and logo. The logo was 
+  made in Micosoft Paint and Visio.
+
+2 Database design
+
+    2.1 users table
+    
+        The users table was created to keep track of all the users of the 
+        website. It is a direct carry-over of PSet7. I did not drop the cash 
+        column for fear of deleting data that might later be relevant. 
+        Similarly, the transactions and holdings tables are not used and were 
+        emptied.
+    
+    2.2 books table
+    
+        The books table holds the values that were returned by the Google Books
+        API and when a user adds a new book that does not yet exist in the 
+        table. By using the ISBN-13 as the primary key it helps to ensure that
+        books are not inserted more than once. The information that I chose to
+        include is the title of the book (including subtitle if one exists), 
+        the author, and the URL for the thumbnail that Google provides. Since 
+        multiple people may own the same edition of a book, this table holds 
+        no information on the owners. 
+    
+    2.3 ownership table
+    
+        The ownership table is used to link entries from the books table with 
+        users. It further contains specific information on the status of the 
+        book. The status of a book can be "owned", "loaned", or "wishlist". 
+        When a book is loaned out, the table gest updated with information on
+        the lender and the date that the book was given on loan.
+    
+    2.4 friends table
+    
+        The friends table was created to store the relationships between users.
+        It holds the user ids of the user who sent the request (id), the user
+        who received the request (id2), the time the request was sent 
+        (datetime), and the current status of the request (status). This
+        information is used to determine which users have permission to view
+        each other's lists and can further interact.
+        
+    
+3 Google Books API
+
+    3.1 Inputs to API
+    
+        The API takes very specific inputs as specified in 
+        "https://developers.google.com/books/docs/v1/using#PerformingSearch".
+        In order to give meaningful results I decided to limit book information
+        to title, author(s), and cover image. A lot of my early tests showed 
+        that the API would return incomplete or empty elements for other 
+        characteristics of books. This also made me choose ISBN_13 as the 
+        unique ID of choice. While this is excluding very old editions it was 
+        easier than dealing with multiple identifiers (like ISBN_10) and 
+        potentially having duplicate entries for the same books. This was not
+        an easy decision but I think it makes the site more userfriendly as it
+        guarantees more complete information for the books that are made 
+        available to the user per search the results.
+        In order to search the search string is formed by cleanign up the 
+        search terms with regular expressions, as well as trimming leading and 
+        trailing whitespace. The search terms are concatenated with "+" signs
+        and prefixed with the corresponding Google Books API parameter value.
+        In addition to the specific parameters, I also limited search results 
+        to 20 per request and excluded results that are not books (such as 
+        periodicals).
+        Another detail that I noticed what that even though I would search 
+        certain books by ISBN_13 and got the book that I wanted to find, some 
+        of the results did not in turn include the ISBN_13 in the response. To
+        circumvent that I had to use the user input to make sure that books 
+        would still get stored in the DB with the correct unique ID.
+
+    3.2 Adding books
+    
+        Adding books to the DB required another call to the API. I used the
+        ISBN number on the results page to uniquely identify the rows of the
+        results and named the buttons according to the action to be performed.
+        This helped me to post the results to another controler that would then
+        handle the action request and add the book to the DB if it did not yet 
+        exist and then to the user's bookshelf or wishlist. This was my first 
+        attempt to make information from one controller available in another 
+        and it heavily influenced my design decisions afterward on how to pass
+        data. 
+        
+4 Controller design
+
+    4.1 Passing variables
+
+        4.1.1 Search My Shelves
+
+              The controller renders a search form and listens for the form
+              submission. Upon submission, it queries the DB and returns 
+              results sorted by most relevant. The query is a substring search
+              that is inclusive. If a user searched for an author and a book
+              title by another author, the books of the author and the other 
+              book will all be returned. If the program can find more than one
+              substring per result, it gives the result a heavier weight and
+              making it more relevant. Lastly, the irrelevant results are 
+              removed and the relevant results are sorted and rendered to the
+              user. The user can then perform the actions described in 
+              documentation.txt and manage his/her lists.
+              One of the challenges was to give the forms and buttons unique
+              IDs that other controllers could pick up and use for their 
+              programs as mentioned in 3.2. Except for my most recent 
+              functionality, which was to split a friend's lists into different
+              pages, I preferred to not store all the information in the 
+              SESSION superglobal variable. I posted most results from one page
+              to the controller and then used SQL queries to prepare an action
+              or render results for the next page. 
+
+        4.1.2 Search My Friends' Shelves
+        
+              In this funcitonality, the controller works in a similar fashion
+              to the controller in 4.1.1. However, after cleaning up the search
+              terms it establishes who the user's friends are. This is a two-
+              step process. As per the design of the friends DB table a user 
+              could either have sent a friend request or been sent a friend 
+              request. Depending on the starting point the user might be id or 
+              id2 in the table. I combined the results of both queries and then
+              had to join all four tables to get access to all the necessary 
+              information. I had to get friendship information to give the 
+              right access, user information to determine the owners' username 
+              for possible borrow requests, and book and ownership information 
+              to display the right book results. This was probably the most 
+              challenging SQL query to write but my revelation was to not try 
+              to make it even more complex but to filter and sort the results 
+              in PHP after obtaining all possible books first. 
+        
+        4.1.3 Add friends
+        
+              For this functionality I thought about a better DB structure for
+              a while but could not think of one. Given the nature of matching
+              relationships that could go two ways (as explained in 4.1.2) I 
+              decided to have a similar two step process and combine the SQL 
+              query results. I built conditions into the search functionality
+              that would always display all users but show the ones that the
+              user is already friends with and prevent duplicate requests to be
+              sent. This means that once a request has been accepted or denied,
+              users will not be able to change the relationship status between 
+              each other for now. 
+              The search itself is very similar to the search for books. Inputs
+              are cleaned, and a substring query is performed to find matches 
+              based on username or email address.
+              A list of users is displayed as a result and the user can choose
+              to send a friend request to another user. This friend request 
+              then shows up in the "My Friends" nav link and allows the other
+              user to accept or reject the request.
+              As with most other buttons, an identifier is used to send the 
+              information of the relationship per a post appended to a URL to 
+              inform the next controller of the action to be taken. In the 
+              new controller the identifier is then usually picked up with a 
+              $_GET["example"] superglobal.
+        
+        4.1.4 Rendering pages
+              
+              Pages are rendered with the framework provided by PSet7 for the 
+              most part. However, I had to come up with a few ways to pass data
+              beyond the next immediate page. As described already, using post 
+              and the $_GET variable allowed for doing this in most situations.
+              However, when displaying the lists of friends via the "View 
+              Profile" button and then the left-hand dashboard, I used the
+              SESSION superglobal to pass additional information and keep it
+              available while the lists were being rendered separately.
+              
+        4.1.5 Sending emails 
+            
+              I used the same framework that I had used in PSet7 but had to 
+              pass additional data as the borrow requests are sent to the 
+              user's friends and not the user itself.
+            
+    4.3 Exception handling 
+    
+        During testing, I noticed that while passing data between controllers 
+        with the GET variable was convenient when changing the parameters that
+        were passed I would get big orange errors. In order to mitigate this, I
+        included an apology on any controllers that were listening for button
+        submissions. Once they receive unexpected input, they handle the 
+        request and allow the user to go back and retry
+       
+5 HTML/CSS design
+
+    5.1 Page structure for book lists
+    
+        The page structure was deliberately kept centered to follow modern 
+        design conventions. When I included the left-hand dashboard to view the
+        separate lists in the user's bookshelf or when viewing friend's 
+        profiles, I wanted the dashboard and the lists to be centered together.
+        I adjusted the CSS to get this effect and provide a better UI to 
+        facilitate navigating book lists.
+    
+    5.2 Page structure for search results
+    
+        For search results, I kept the full width lists. As wishlists are 
+        excluded from the search, it makes more sense to present the books 
+        and their owners consistently whether they are currently in posession
+        of their books or have loaned them out. I want look into providing
+        more granular search results and additional filtering options at a 
+        later time.
